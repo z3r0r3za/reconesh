@@ -13,11 +13,11 @@ up=$(wget --spider --server-response $1 2>&1 | grep '200\ OK' | wc -l)
 # Is the domain up? If not, inform user, print usage and exit.
 if [ $# -eq 0 ]; then
     echo "A domain wasn't specified."
-    echo "Usage: recon.sh domain.com"
+    echo "Usage: recone.sh domain.com"
     exit 1
 elif [ "$up" = 0 ]; then
     echo "That domain is down or doesn't exist. "
-    echo "Usage: recon.sh domain.com"
+    echo "Usage: recone.sh domain.com"
     exit 1
 fi
 
@@ -73,6 +73,7 @@ subfinder -d $domain > "$subdomains/found.txt"
 
 # Run sublist3r and remove characters from output.
 # ORIGINAL: https://github.com/aboul3la/Sublist3r
+# The newer fork hasn't been tested with this script.
 # NEWER FORK: https://github.com/RoninNakomoto/Sublist3r2
 # The sed commands may need adjustments if sublist3r output changes.
 # subfinder might find more. sublist3r hasn't been finding every subdomain.
