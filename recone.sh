@@ -30,16 +30,19 @@ RESET="\033[0m"
 # Set up directories. Add timestamp to base directory. 
 base_directory="${domain}_$(date +'%Y%m%dT%H%M%S')"
 nmap="$base_directory/nmap"
+ferox="$base_directory/ferox"
 information="$base_directory/info"
 subdomains="$base_directory/subdomains"
 screenshots="$base_directory/screenshots"
+dirs=("$nmap" "$ferox" "$information" "$subdomains" "$screenshots")
 validate_domain="^([a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\.)+[a-zA-Z]{2,}$"
 
 # Check if domain is valid.
 if [[ "$domain" =~ $validate_domain ]]; then
     # Create directories for domain.
     echo "Creating directories for the domain..."
-    for path in "$nmap" "$information" "$subdomains" "$screenshots"; do
+    #for path in "$nmap" "$ferox" "$information" "$subdomains" "$screenshots"; do
+    for path in ${dirs[@]}; do
         if [ ! -d "$path" ]; then
             mkdir -p "$path"
             echo "$path"
@@ -123,3 +126,18 @@ cat "$subdomains/found.txt" | grep $domain | sort -u | httprobe -prefer-https | 
 # #############################################
 echo -e "${GREEN} [+]${RED} Run gowitness, taking screenshots...${RESET}"
 gowitness file -f "$subdomains/alive.txt" -P "$screenshots/" --no-http
+
+# Run feroxbuster and extract accessible files.
+# https://github.com/epi052/feroxbuster
+# This is unfinished and not tested that much yet.
+# #############################################
+#echo -e "${GREEN} [+]${RED} Run feroxbuster, save status 200s...${RESET}"
+#if [[ $(wget -S --spider https://$domain  2>&1 | grep 'HTTP/1.1 200 OK') ]]; then  
+#    echo "HTTPS: true"
+#    feroxbuster -u "https://$domain" -o "$ferox/directories.txt"
+#elif [[ $(wget -S --spider  http://$domain  2>&1 | grep 'HTTP/1.1 200 OK') ]]; then
+#    echo "HTTP: true"
+#    feroxbuster -u "http://$domain" -o "$ferox/directories.txt"
+#fi
+#grep -E '^[2][0]{2}' "$ferox/directories.txt" > "$ferox/accessible_dirs1.txt"
+#sed 's@.*//@@' "$ferox/accessible_dirs1.txt" > "$ferox/accessible_dirs2.txt"
